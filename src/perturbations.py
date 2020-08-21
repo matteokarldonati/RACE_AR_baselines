@@ -1,11 +1,12 @@
-import os
-import pickle
-import random
-import sys
+from __future__ import unicode_literals
 
 import neuralcoref
 import nltk
+import os
+import pickle
+import random
 import spacy
+import sys
 from nltk.corpus import names
 
 nlp = spacy.load("en_core_web_sm")
@@ -20,8 +21,8 @@ NAMES = MALE_NAMES + FEMALE_NAMES
 
 path = [path for path in sys.path if path.endswith('RACE_AR_baselines/src')][0]
 ner_dict_path = os.path.join(path, 'data_perturbations/ner_dict.pkl')
-with open(ner_dict_path, 'rb') as f:
-    NER_DICT = pickle.load(f)
+#with open(ner_dict_path, 'rb') as f:
+#    NER_DICT = pickle.load(f)
 
 
 def get_names(text):
