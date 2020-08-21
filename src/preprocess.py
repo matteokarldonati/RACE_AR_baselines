@@ -52,7 +52,7 @@ if __name__ == "__main__":
                 if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
                     entities = get_entities(article, perturbation_type)
 
-                for _ in range(perturbation_num):
+                for n in range(perturbation_num):
 
                     if perturbation_type == 'names':
                         adv_names = get_adv_names(len(names), None)
@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
                             obj["options"][i][k] = tokenize(obj["options"][i][k])
                             avg_option_length += obj["options"][i][k].count(" ")
-                    json.dump(obj, open(os.path.join(new_data_path, inf), "w"), indent=4)
+                    json.dump(obj, open(os.path.join(new_data_path, inf + '_' + str(n)), "w"), indent=4)
     '''print "avg article length", avg_article_length * 1. / cnt
     print "avg question length", avg_question_length * 1. / num_que
     print "avg option length", avg_option_length * 1. / (num_que * 4)'''
