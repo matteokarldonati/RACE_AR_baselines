@@ -77,7 +77,7 @@ if __name__ == "__main__":
                             obj["questions"][i] = replace_names(obj["questions"][i], names, adv_names)
 
                         if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
-                            obj["questions"][i] = replace_entities(data_raw["questions"][i], entities, adv_entities)
+                            obj["questions"][i] = replace_entities(obj["questions"][i], entities, adv_entities)
 
                         obj["questions"][i] = tokenize(obj["questions"][i])
                         avg_question_length += obj["questions"][i].count(" ")
