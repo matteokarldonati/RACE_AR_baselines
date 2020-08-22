@@ -1,18 +1,20 @@
-import numpy as np
-import theano
-import theano.tensor as T
 import lasagne
+import lasagne.layers as L
+import logging
+import numpy as np
 import pickle
 import sys
+import theano
+import theano.tensor as T
 import time
-import utils
+
 import config
-import logging
 import nn_layers
-import lasagne.layers as L
-from nn_layers import QuerySliceLayer
+import utils
 from nn_layers import AttentionSumLayer
 from nn_layers import GatedAttentionLayerWithQueryAttention
+from nn_layers import QuerySliceLayer
+
 
 def gen_examples(x1, x2, x3, y, batch_size, concat=False):
     """
@@ -74,12 +76,12 @@ def build_fn(args, embeddings):
         # 4. No character-level embeddings are used.
 
         l_q = nn_layers.stack_rnn(l_emb2, l_mask2, 1, args.hidden_size,
-                                       grad_clipping=args.grad_clipping,
-                                       dropout_rate=args.dropout_rate,
-                                       only_return_final=False,
-                                       bidir=args.bidir,
-                                       name='q',
-                                       rnn_layer=args.rnn_layer)
+                                  grad_clipping=args.grad_clipping,
+                                  dropout_rate=args.dropout_rate,
+                                  only_return_final=False,
+                                  bidir=args.bidir,
+                                  name='q',
+                                  rnn_layer=args.rnn_layer)
         q_length = nn_layers.LengthLayer(l_mask2)
         network2 = QuerySliceLayer([l_q, q_length])
         for layer_num in xrange(args.num_GA_layers):
@@ -149,14 +151,15 @@ def build_fn(args, embeddings):
     test_prob = lasagne.layers.get_output(network, deterministic=True)
     test_prediction = T.argmax(test_prob, axis=-1)
     acc = T.sum(T.eq(test_prediction, in_y))
-    test_fn = theano.function([in_x1, in_mask1, in_x2, in_mask2, in_x3, in_mask3, in_y], [acc, test_prediction], on_unused_input='warn')
+    test_fn = theano.function([in_x1, in_mask1, in_x2, in_mask2, in_x3, in_mask3, in_y], [acc, test_prediction],
+                              on_unused_input='warn')
 
     # Train functions
     train_prediction = lasagne.layers.get_output(network)
     train_prediction = T.clip(train_prediction, 1e-7, 1.0 - 1e-7)
     loss = lasagne.objectives.categorical_crossentropy(train_prediction, in_y).mean()
     # TODO: lasagne.regularization.regularize_network_params(network, lasagne.regularization.l2)
-    params = lasagne.layers.get_all_params(network)#, trainable=True)
+    params = lasagne.layers.get_all_params(network)  # , trainable=True)
     all_params = lasagne.layers.get_all_params(network)
     if args.optimizer == 'sgd':
         updates = lasagne.updates.sgd(loss, params, args.learning_rate)
@@ -200,14 +203,15 @@ def main(args):
         logging.info('*' * 10 + ' Train')
         train_examples = utils.load_data(args.train_file, relabeling=args.relabeling)
         logging.info('*' * 10 + ' Dev')
-        dev_examples = utils.load_data(args.dev_file, args.max_dev, relabeling=args.relabeling, question_belong=question_belong)
+        dev_examples = utils.load_data(args.dev_file, args.max_dev, relabeling=args.relabeling,
+                                       question_belong=question_belong)
 
     args.num_train = len(train_examples[0])
     args.num_dev = len(dev_examples[0])
 
     logging.info('-' * 50)
     logging.info('Build dictionary..')
-    #word_dict = utils.build_dict(train_examples[0] + train_examples[1] + train_examples[2], args.max_vocab_size)
+    # word_dict = utils.build_dict(train_examples[0] + train_examples[1] + train_examples[2], args.max_vocab_size)
     word_dict = pickle.load(open("../obj/dict.pkl", "rb"))
     logging.info('-' * 50)
     embeddings = utils.gen_embeddings(word_dict, args.embedding_size, args.embedding_file)
@@ -220,7 +224,8 @@ def main(args):
 
     logging.info('-' * 50)
     logging.info('Intial test..')
-    dev_x1, dev_x2, dev_x3, dev_y = utils.vectorize(dev_examples, word_dict, sort_by_len=not args.test_only, concat=args.concat)
+    dev_x1, dev_x2, dev_x3, dev_y, ids = utils.vectorize(dev_examples, word_dict, sort_by_len=not args.test_only,
+                                                         concat=args.concat)
     word_dict_r = {}
     word_dict_r[0] = "unk"
     assert len(dev_x1) == args.num_dev
@@ -228,6 +233,16 @@ def main(args):
     dev_acc, pred = eval_acc(test_fn, all_dev)
     logging.info('Dev accuracy: %.2f %%' % dev_acc)
     best_acc = dev_acc
+
+    with open("pred.pkl", "wb") as fp:
+        pickle.dump(pred, fp)
+
+    with open("label.pkl", "wb") as fp:
+        pickle.dump(dev_y, fp)
+
+    with open("ids.pkl", "wb") as fp:
+        pickle.dump(ids, fp)
+
     if args.test_only:
         return
     utils.save_params(args.model_file, all_params, epoch=0, n_updates=0)
@@ -248,7 +263,8 @@ def main(args):
             train_loss = train_fn(mb_x1, mb_mask1, mb_x2, mb_mask2, mb_x3, mb_mask3, mb_y)
             if idx % 100 == 0:
                 logging.info('#Examples = %d, max_len = %d' % (len(mb_x1), mb_x1.shape[1]))
-                logging.info('Epoch = %d, iter = %d (max = %d), loss = %.2f, elapsed time = %.2f (s)' % (epoch, idx, len(all_train), train_loss, time.time() - start_time))
+                logging.info('Epoch = %d, iter = %d (max = %d), loss = %.2f, elapsed time = %.2f (s)' % (
+                epoch, idx, len(all_train), train_loss, time.time() - start_time))
             n_updates += 1
 
             if n_updates % args.eval_iter == 0:
