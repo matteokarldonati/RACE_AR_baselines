@@ -94,6 +94,8 @@ def vectorize(examples, word_dict,
     in_x3 = []
     in_y = []
 
+    ids = examples[4]
+
     def get_vector(st):
         seq = [word_dict[w] if w in word_dict else 0 for w in st]
         return seq
@@ -132,7 +134,7 @@ def vectorize(examples, word_dict,
         in_x2 = [in_x2[i] for i in sorted_index]
         in_y = [in_y[i] for i in sorted_index]
         in_x3 = [in_x3[i] for i in sorted_index]
-        ids = [examples[4][i] for i in sorted_index]
+        ids = [ids[i] for i in sorted_index]
 
     new_in_x3 = []
     for i in in_x3:
