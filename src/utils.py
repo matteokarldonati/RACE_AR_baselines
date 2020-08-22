@@ -36,7 +36,7 @@ def load_data(in_file, max_example=None, relabeling=True, question_belong=[]):
         obj = json.load(open(inf, "r"))
         for i, q in enumerate(obj["questions"]):
 
-            ids.append(a.split('.')[2].split('/')[-1] + '_' + str(i))
+            ids.append(inf.split('.')[2].split('/')[-1] + '_' + str(i))
 
             question_belong += [inf + "_" + str(i)]
             documents += [obj["article"]]
