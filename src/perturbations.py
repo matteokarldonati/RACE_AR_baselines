@@ -21,8 +21,8 @@ NAMES = MALE_NAMES + FEMALE_NAMES
 
 path = [path for path in sys.path if path.endswith('RACE_AR_baselines/src')][0]
 ner_dict_path = os.path.join(path, 'data_perturbations/ner_dict.pkl')
-#with open(ner_dict_path, 'rb') as f:
-#    NER_DICT = pickle.load(f)
+with open(ner_dict_path, 'rb') as f:
+    NER_DICT = pickle.load(f)
 
 
 def get_names(text):
