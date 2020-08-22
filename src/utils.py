@@ -33,11 +33,11 @@ def load_data(in_file, max_example=None, relabeling=True, question_belong=[]):
         return files
     files = get_file(in_file)
     for inf in files:
-
-        ids.append(inf)
-
         obj = json.load(open(inf, "r"))
         for i, q in enumerate(obj["questions"]):
+
+            ids.append(inf.split('.')[0] + '_' + str(i))
+
             question_belong += [inf + "_" + str(i)]
             documents += [obj["article"]]
             questions += [q]
@@ -93,7 +93,6 @@ def vectorize(examples, word_dict,
     in_x2 = []
     in_x3 = []
     in_y = []
-    ids = []
 
     def get_vector(st):
         seq = [word_dict[w] if w in word_dict else 0 for w in st]
@@ -109,7 +108,6 @@ def vectorize(examples, word_dict,
             in_x1 += [seq1]
             in_x2 += [seq2]
             option_seq = []
-            ids_seq = []
             for i in range(4):
                 if concat:
                     op = " ".join(q_words) + ' @ ' + examples[2][i + idx * 4]
@@ -119,11 +117,7 @@ def vectorize(examples, word_dict,
                 option = get_vector(op)
                 assert len(option) > 0
                 option_seq += [option]
-
-                ids_seq.append(examples[4][idx].split('.')[0] + '_' + str(i) + '.txt')
-
             in_x3 += [option_seq]
-            ids += ids_seq
             in_y.append(a)
         if verbose and (idx % 10000 == 0):
             logging.info('Vectorization: processed %d / %d' % (idx, len(examples[0])))
@@ -138,7 +132,7 @@ def vectorize(examples, word_dict,
         in_x2 = [in_x2[i] for i in sorted_index]
         in_y = [in_y[i] for i in sorted_index]
         in_x3 = [in_x3[i] for i in sorted_index]
-        ids = [ids[i] for i in sorted_index]
+        ids = [examples[4][i] for i in sorted_index]
 
     new_in_x3 = []
     for i in in_x3:
