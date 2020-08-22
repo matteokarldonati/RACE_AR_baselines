@@ -85,7 +85,8 @@ if __name__ == "__main__":
 
                             obj["options"][i][k] = tokenize(obj["options"][i][k])
                             avg_option_length += obj["options"][i][k].count(" ")
-                    json.dump(obj, open(os.path.join(new_data_path, inf + '_' + str(n)), "w"), indent=4)
+                    file_id = inf.split('.')[0] + '_' + str(n) + '.txt'
+                    json.dump(obj, open(os.path.join(new_data_path, file_id), "w"), indent=4)
     '''print "avg article length", avg_article_length * 1. / cnt
     print "avg question length", avg_question_length * 1. / num_que
     print "avg option length", avg_option_length * 1. / (num_que * 4)'''
