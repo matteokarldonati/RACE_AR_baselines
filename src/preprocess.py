@@ -54,12 +54,14 @@ if __name__ == "__main__":
                     if names:
                         perturbated = 1
                         cnt_perturbation += 1
+                        print(cnt_perturbation)
 
                 if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
                     entities = get_entities(article, perturbation_type)
                     if entities:
                         perturbated = 1
                         cnt_perturbation += 1
+                        print(cnt_perturbation)
 
                 for n in range(perturbation_num + 1):
 
