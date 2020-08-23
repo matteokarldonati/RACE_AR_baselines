@@ -22,6 +22,7 @@ if __name__ == "__main__":
     data = "../data/data"
     raw_data = "../../drive/My Drive/Colab Notebooks/noahlab/RACE"
     cnt = 0
+    cnt_perturbation = 0
     avg_article_length = 0
     avg_question_length = 0
     avg_option_length = 0
@@ -52,11 +53,13 @@ if __name__ == "__main__":
                     names = get_names_groups(article)
                     if names:
                         perturbated = 1
+                        cnt_perturbation += 1
 
                 if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
                     entities = get_entities(article, perturbation_type)
                     if entities:
                         perturbated = 1
+                        cnt_perturbation += 1
 
                 for n in range(perturbation_num + 1):
 
@@ -96,6 +99,8 @@ if __name__ == "__main__":
                             avg_option_length += obj["options"][i][k].count(" ")
                     file_id = inf.split('.')[0] + '_' + str(n) + '_' + str(perturbated) + '.txt'
                     json.dump(obj, open(os.path.join(new_data_path, file_id), "w"), indent=4)
+
+            print(cnt_perturbation)
     '''print "avg article length", avg_article_length * 1. / cnt
     print "avg question length", avg_question_length * 1. / num_que
     print "avg option length", avg_option_length * 1. / (num_que * 4)'''
