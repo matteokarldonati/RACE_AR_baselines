@@ -58,14 +58,15 @@ if __name__ == "__main__":
                     if entities:
                         perturbated = 1
 
-                for n in range(perturbation_num):
+                for n in range(perturbation_num + 1):
 
-                    if perturbation_type == 'names':
-                        adv_names = get_adv_names(len(names), None)
-                        obj["article"] = replace_names(article, names, adv_names)
-                    if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
-                        adv_entities = get_adv_entities(len(entities), perturbation_type)
-                        obj["article"] = replace_entities(article, entities, adv_entities)
+                    if n > 0:
+                        if perturbation_type == 'names':
+                            adv_names = get_adv_names(len(names), None)
+                            obj["article"] = replace_names(article, names, adv_names)
+                        if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
+                            adv_entities = get_adv_entities(len(entities), perturbation_type)
+                            obj["article"] = replace_entities(article, entities, adv_entities)
 
                     obj["article"] = obj["article"].replace("\\newline", "\n")
                     obj["article"] = tokenize(obj["article"])
@@ -73,21 +74,23 @@ if __name__ == "__main__":
                     for i in range(len(obj["questions"])):
                         num_que += 1
 
-                        if perturbation_type == 'names':
-                            obj["questions"][i] = replace_names(obj["questions"][i], names, adv_names)
+                        if n > 0:
+                            if perturbation_type == 'names':
+                                obj["questions"][i] = replace_names(obj["questions"][i], names, adv_names)
 
-                        if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
-                            obj["questions"][i] = replace_entities(obj["questions"][i], entities, adv_entities)
+                            if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
+                                obj["questions"][i] = replace_entities(obj["questions"][i], entities, adv_entities)
 
                         obj["questions"][i] = tokenize(obj["questions"][i])
                         avg_question_length += obj["questions"][i].count(" ")
                         for k in range(4):
 
-                            if perturbation_type == 'names':
-                                obj["options"][i][k] = replace_names(obj["options"][i][k], names, adv_names)
+                            if n > 0:
+                                if perturbation_type == 'names':
+                                    obj["options"][i][k] = replace_names(obj["options"][i][k], names, adv_names)
 
-                            if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
-                                obj["options"][i][k] = replace_entities(obj["options"][i][k], entities, adv_entities)
+                                if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
+                                    obj["options"][i][k] = replace_entities(obj["options"][i][k], entities, adv_entities)
 
                             obj["options"][i][k] = tokenize(obj["options"][i][k])
                             avg_option_length += obj["options"][i][k].count(" ")
