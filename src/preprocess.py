@@ -35,7 +35,7 @@ if __name__ == "__main__":
         if not os.path.exists(p1):
             os.mkdir(p1)
         for d in difficulty_set:
-            new_data_path = os.path.join(data, data_set, d)
+            new_data_path = os.path.join(raw_data, data_set + '_' + perturbation_type, d)
             if not os.path.exists(new_data_path):
                 os.mkdir(new_data_path)
             new_raw_data_path = os.path.join(raw_data, data_set, d)
