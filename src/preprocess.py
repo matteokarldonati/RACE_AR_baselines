@@ -54,14 +54,12 @@ if __name__ == "__main__":
                     if names:
                         perturbated = 1
                         cnt_perturbation += 1
-                        print(cnt_perturbation)
 
                 if perturbation_type in ['ORG', 'GPE', 'LOC', 'NORP']:
                     entities = get_entities(article, perturbation_type)
                     if entities:
                         perturbated = 1
                         cnt_perturbation += 1
-                        print(cnt_perturbation)
 
                 for n in range(perturbation_num + 1):
 
@@ -102,7 +100,6 @@ if __name__ == "__main__":
                     file_id = inf.split('.')[0] + '_' + str(n) + '_' + str(perturbated) + '.txt'
                     json.dump(obj, open(os.path.join(new_data_path, file_id), "w"), indent=4)
 
-            print(cnt_perturbation)
     '''print "avg article length", avg_article_length * 1. / cnt
     print "avg question length", avg_question_length * 1. / num_que
     print "avg option length", avg_option_length * 1. / (num_que * 4)'''
